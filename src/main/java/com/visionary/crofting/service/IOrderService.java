@@ -13,4 +13,5 @@ public interface IOrderService {
     Order updateOrder(OrderDTO order) throws BusinessException;
     List<Order> getAll();
     List<OrderItem> getOrderItemsPerOrder(Long orderId) throws BusinessException;
+    List<Order> getOrdersByStatus(Order.OrderStatusEnum status);
 }

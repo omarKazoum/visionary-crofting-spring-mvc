@@ -70,6 +70,11 @@ public class OrderServiceImpl implements IOrderService {
         return orderRepository.findById(orderId).get().getOrderItems();
     }
 
+    @Override
+    public List<Order> getOrdersByStatus(Order.OrderStatusEnum status) {
+        return orderRepository.findOrderByStatus(status);
+    }
+
     boolean isOrderDTOValide(OrderDTO orderDTO, List<String> errors,OperationENum operation){
         boolean valide=true;
         if(operation.equals(OperationENum.UPDATE)){

@@ -2,6 +2,7 @@ package com.visionary.crofting.controller;
 
 import com.visionary.crofting.dto.OrderDTO;
 import com.visionary.crofting.dto.OrderItemDTO;
+import com.visionary.crofting.entity.Order;
 import com.visionary.crofting.exceptions.BusinessException;
 import com.visionary.crofting.response.ApiResponse;
 import com.visionary.crofting.service.IOrderService;
@@ -88,4 +89,15 @@ public class OrderController {
         return responseEntity;
 
     }
+    @GetMapping("/status/{status}")
+    ResponseEntity getOrdersWithStatus(@PathVariable Order.OrderStatusEnum status){
+        ResponseEntity responseEntity;
+        ApiResponse<List<OrderDTO>> apiResponse=new ApiResponse<>();
+        apiResponse.setData(orderService.getOrdersByStatus(status).stream().map(EntityUtils::orderToOrderDTO).collect(Collectors.toList()));
+        apiResponse.setResponseMessage(String.format("successfully returned all available orders with status %s !",status.toString()));
+        apiResponse.setResponseCode(ApiResponse.ResponseCode.SUCCESS);
+        responseEntity=new ResponseEntity(apiResponse, HttpStatus.OK);
+        return responseEntity;
+    }
+
 }
