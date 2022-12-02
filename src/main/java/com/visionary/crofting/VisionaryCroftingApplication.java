@@ -10,11 +10,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SpringBootApplication
 @EnableSwagger2
 public class VisionaryCroftingApplication  {
-	@Autowired
-	SupplierRepository supplierRepository;
 
-	@Autowired
-	ClientRepository clientRepository;
 	public static void main(String[] args) {
 		SpringApplication.run(VisionaryCroftingApplication.class, args);
 	}

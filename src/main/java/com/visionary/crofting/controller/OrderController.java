@@ -8,6 +8,7 @@ import com.visionary.crofting.response.ApiResponse;
 import com.visionary.crofting.service.IOrderService;
 import com.visionary.crofting.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Description;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,6 @@ import java.util.stream.Collectors;
 public class OrderController {
     @Autowired
     IOrderService orderService;
-
     @GetMapping("/{orderId}/orderItems")
     ResponseEntity getOrderItemsPerOrder(@PathVariable("orderId") Long orderId){
         ResponseEntity responseEntity;
@@ -59,6 +59,9 @@ public class OrderController {
             return responseEntity;
     }
 
+    /***
+     * get a list of all orders
+     */
     @GetMapping("/")
     ResponseEntity getOrders(){
         ResponseEntity responseEntity;

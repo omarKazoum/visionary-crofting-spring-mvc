@@ -24,8 +24,10 @@ public class OrderServiceImpl implements IOrderService {
         List<String> errors=new ArrayList<>();
         if(!isOrderDTOValide(orderDTO,errors,OperationENum.ADD))
             throw new BusinessException("invalid token",errors);
+
             ModelMapper modelMapper=new ModelMapper();
             Order orderToSave=modelMapper.map(orderDTO,Order.class);
+
             orderToSave.setClient(clientRepository.findById(orderDTO.getClientId()).get());
             orderToSave.setReference(UUID.randomUUID().toString());
             orderToSave.setTotalPrice(0);
