@@ -1,0 +1,87 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${T(com.visionary.crofting.util.Constants).APP_NAME}"></title>
+    <link rel="stylesheet" th:href="@{/bootstrap-5.css}">
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 offset-md-4">
+            <h1 class="text-center mt-5">Login</h1>
+            <form method="post" th:action="@{/login}" th:object="${loginDto}">
+                <div class = "form-group row ">
+                        <span class="alert alert-danger w-75 mx-auto" th:errors="*{global}" > </span>
+                </div>
+                <!-- user type input -->
+                <div class="form-outline mb-4">
+                    <label class="form-label" for="roleId">Login as</label>
+                    <select th:field="*{roleId}"  id="roleId" class="form-select" >
+                        <option th:each="item: ${T(com.visionary.crofting.entity.RoleEnum).values()}" th:value="${item.ordinal()}" th:text="${item.toString().toLowerCase()}" th:selected="${loginDto!=null && item.ordinal()==loginDto.roleId}"></option>
+                    </select>
+                    <span class="text-danger" th:errors="*{roleId}" > </span>
+                </div>
+                <!-- Email input -->
+                <div class="form-outline mb-4">
+                    <label class="form-label" for="email">Email address</label>
+                    <input th:field="*{email}"  id="email" class="form-control" />
+                    <span class="text-danger" th:errors="*{email}" > </span>
+                </div>
+
+                <!-- Password input -->
+                <div class="form-outline mb-4">
+                    <label class="form-label" for="password">Password</label>
+                    <input type="password" th:field="*{password}" id="password" class="form-control" />
+                    <div class = "form-group row ">
+                        <span class="text-danger" th:errors="*{password}" > </span>
+                </div>
+                </div>
+
+                <!-- 2 column grid layout for inline styling -->
+                <div class="row mb-4">
+                    <div class="col d-flex justify-content-center">
+                        <!-- Checkbox -->
+                        <div class="form-check">
+                            <input class="form-check-input" th:field="*{rememberMe}" type="checkbox" id="rememberMe" checked />
+                            <label class="form-check-label" for="rememberMe"> Remember me </label>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <!-- Simple link -->
+                        <a href="#!">Forgot password?</a>
+                    </div>
+                </div>
+
+                <!-- Submit button -->
+                <button type="submit" class="btn btn-primary btn-block mb-4 w-100">Sign in</button>
+
+                <!-- Register buttons -->
+                <div class="text-center">
+                    <p>Not a member? <a href="#!">Register</a></p>
+                    <p>or sign up with:</p>
+                    <button type="button" class="btn btn-link btn-floating mx-1">
+                        <i class="fab fa-facebook-f"></i>
+                    </button>
+
+                    <button type="button" class="btn btn-link btn-floating mx-1">
+                        <i class="fab fa-google"></i>
+                    </button>
+
+                    <button type="button" class="btn btn-link btn-floating mx-1">
+                        <i class="fab fa-twitter"></i>
+                    </button>
+
+                    <button type="button" class="btn btn-link btn-floating mx-1">
+                        <i class="fab fa-github"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src = "https://code.jquery.com/jquery-3.3.1.slim.min.js"> </script>
+<script src = "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" > </script>
+<script src = "https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" > </script>
+</body>
+</html>

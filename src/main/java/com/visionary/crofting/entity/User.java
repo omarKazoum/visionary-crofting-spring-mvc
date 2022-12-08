@@ -11,7 +11,8 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Table(name = "users")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public abstract class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -30,10 +31,7 @@ public abstract class User {
     @Enumerated(EnumType.STRING)
     protected  RoleEnum role;
 
-    public enum RoleEnum{
-        SUPPLIER,
-        CLIENT
-    }
+
 
 
 }

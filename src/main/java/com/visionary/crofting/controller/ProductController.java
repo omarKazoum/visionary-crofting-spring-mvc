@@ -3,29 +3,30 @@ package com.visionary.crofting.controller;
 import com.visionary.crofting.entity.Product;
 import com.visionary.crofting.requests.ProductRequest;
 import com.visionary.crofting.response.ApiResponse;
-import com.visionary.crofting.service.IService;
 import com.visionary.crofting.service.Impl.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
-@RestController
-@RequestMapping("/api/user")
+import java.util.HashMap;
+import java.util.Map;
+
+@Controller
+@RequestMapping("/products")
 public class ProductController {
 
-    @Qualifier("productService")
     @Autowired
-    IService service ;
+    ProductService productService;
 
-    @Autowired
-    ProductService productService ;
-
-    @PostMapping("/product")
+    @PostMapping("/")
     public ResponseEntity<ApiResponse<Product>> saveProduct(@RequestBody ProductRequest productRequest ){
         try {
-            ApiResponse<Product> response = service.save(productRequest);
+            ApiResponse<Product> response = productService.save(productRequest);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }catch (Exception e){
             ApiResponse<Product> productApiResponse = new ApiResponse<>() ;
@@ -37,7 +38,7 @@ public class ProductController {
     @GetMapping("/product/{reference}")
     public ResponseEntity<ApiResponse<Product>> getProductByREF(@PathVariable String reference ){
         try {
-            ApiResponse<Product> response = service.find(reference);
+            ApiResponse<Product> response = productService.find(reference);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }catch (Exception e){
             ApiResponse<Product> productApiResponse = new ApiResponse<>() ;
@@ -46,10 +47,11 @@ public class ProductController {
         }
     }
 
+
     @DeleteMapping("/product/{reference}")
     public ResponseEntity<ApiResponse<Product>> deleteProductById(@PathVariable String reference){
         try {
-            ApiResponse<Product> response = service.delete(reference);
+            ApiResponse<Product> response = productService.delete(reference);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }catch (Exception e){
             ApiResponse<Product> productApiResponse = new ApiResponse<>() ;
@@ -61,7 +63,7 @@ public class ProductController {
     @PutMapping("/product/{reference}")
     public ResponseEntity<ApiResponse<Product>> updateProduct(@PathVariable String reference,@RequestBody ProductRequest productRequest){
         try {
-            ApiResponse<Product> response = service.update(reference,productRequest);
+            ApiResponse<Product> response = productService.update(reference,productRequest);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }catch (Exception e){
             ApiResponse<Product> productApiResponse = new ApiResponse<>() ;
@@ -69,4 +71,15 @@ public class ProductController {
             return new ResponseEntity<>(productApiResponse, HttpStatus.OK);
         }
     }
+
+    @GetMapping("/")
+    public ModelAndView getProductsList(@RequestParam(value = "page",required = false,defaultValue = "0") int pageIndex,@RequestParam(name = "size", required = false,defaultValue = "5") int size){
+      Map<String,Object> model=new HashMap<>();
+      Page<Product> page=productService.findAll(PageRequest.of(pageIndex,size));
+      model.put("products",page.getContent());
+      model.put("page",page);
+      return new ModelAndView("products",model);
+
+    }
+
 }

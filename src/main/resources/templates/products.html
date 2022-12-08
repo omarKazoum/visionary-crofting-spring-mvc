@@ -1,0 +1,45 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Products list</title>
+    <div th:replace="fragments/css_includes :: css"/>
+</head>
+<body>
+    <div class="container">
+    <div th:insert="fragments/header :: header"></div>
+    <main>
+        <h3 class="h3 mt-4">Products:</h3>
+        <table  class="table">
+            <thead>
+                <th scope="col">Title</th>
+                <th scope="col">Description</th>
+                <th scope="col">price</th>
+                <th scope="col">Items left</th>
+            </thead>
+            <tbody>
+            <tr th:each="p: ${products}">
+                <td th:text="${p.title}"></td>
+                <td th:text="${p.description}"></td>
+                <td th:text="${p.initialPrice}"></td>
+                <td th:text="${p.quantity}"></td>
+            </tr>
+
+            </tbody>
+
+        </table>
+        <nav aria-label="pagination mx-auto">
+            <ul class="pagination">
+                <li class="page-item" th:if="${page.hasPrevious()}">
+                    <a class="page-link" th:href="@{/products/(page=${page.previousPageable().getPageNumber()})}" tabindex="-1">Previous</a>
+                </li>
+                <li class="page-item"><a class="page-link" th:href="@{/products/?page=0}">1</a></li>
+                <li class="page-item" th:if="${page.hasNext()}">
+                    <a class="page-link" th:href="@{/products/(page=${page.nextPageable().getPageNumber()})}">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </main>
+    </div>
+    <div th:replace="fragments/js_includes :: js"/>
+</body>
+</html>

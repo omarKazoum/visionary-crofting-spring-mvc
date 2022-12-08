@@ -6,6 +6,9 @@ import com.visionary.crofting.requests.ProductRequest;
 import com.visionary.crofting.response.ApiResponse;
 import com.visionary.crofting.service.IService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,11 +17,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
-public class ProductService implements IService<Product, ProductRequest> {
+public class ProductService {
     @Autowired
     ProductRepository productRepository;
 
-    @Override
+
     public ApiResponse<Product> save(ProductRequest request) {
         try {
             ApiResponse<Product> productApiResponse = new ApiResponse<>();
@@ -42,7 +45,7 @@ public class ProductService implements IService<Product, ProductRequest> {
 
     }
 
-    @Override
+
     public ApiResponse<Product> find(String reference)  {
         try {
             ApiResponse<Product> productApiResponse = new ApiResponse<>();
@@ -69,17 +72,10 @@ public class ProductService implements IService<Product, ProductRequest> {
         }
     }
 
-    @Override
-    public ApiResponse<List<Product>> findAll()  {
-        List<Product> Products = productRepository.findAll();
-        ApiResponse<List<Product>> productApiResponse = new ApiResponse<>();
-        productApiResponse.setResponseCode(ApiResponse.ResponseCode.SUCCESS);
-        productApiResponse.setResponseMessage("Product exist");
-        productApiResponse.setData(Products);
-        return productApiResponse;
+    public Page<Product> findAll(Pageable pageable)  {
+        return productRepository.findAll(pageable);
     }
 
-    @Override
     public ApiResponse<Product> delete(String reference)  {
         try {
             ApiResponse<Product> productApiResponse = new ApiResponse<>();
@@ -101,7 +97,6 @@ public class ProductService implements IService<Product, ProductRequest> {
         }
     }
 
-    @Override
     public ApiResponse<Product> update(String reference, ProductRequest Request) {
         try {
             ApiResponse<Product> productApiResponse = new ApiResponse<>();
