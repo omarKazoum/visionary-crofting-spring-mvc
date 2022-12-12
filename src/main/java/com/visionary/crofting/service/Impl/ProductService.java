@@ -4,15 +4,14 @@ import com.visionary.crofting.entity.Product;
 import com.visionary.crofting.repository.ProductRepository;
 import com.visionary.crofting.requests.ProductRequest;
 import com.visionary.crofting.response.ApiResponse;
-import com.visionary.crofting.service.IService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,61 +45,39 @@ public class ProductService {
     }
 
 
-    public ApiResponse<Product> find(String reference)  {
-        try {
-            ApiResponse<Product> productApiResponse = new ApiResponse<>();
-            boolean validREF = validateREF(reference);
-            if (!validREF){
-                productApiResponse.setResponseCode(ApiResponse.ResponseCode.INVALID_TOKEN);
-                productApiResponse.setResponseMessage("invalid product reference");
-                return productApiResponse;
-            }
-            Product product = productRepository.findByReference(reference);
-            if (!Objects.isNull(product)){
-                productApiResponse.setResponseCode(ApiResponse.ResponseCode.SUCCESS);
-                productApiResponse.setResponseMessage("Product exist");
-                productApiResponse.setData(product);
-                return productApiResponse;
-            }
-            productApiResponse.setResponseCode(ApiResponse.ResponseCode.NOT_EXIST);
-            productApiResponse.setResponseMessage("Product not exist");
-            return productApiResponse;
-        }catch (Exception e){
-            ApiResponse<Product> productApiResponse = new ApiResponse<>();
-            productApiResponse.setResponseCode(ApiResponse.ResponseCode.ERROR_TECHNIQUE);
-            return productApiResponse;
+    public Optional<Product> findProductByReference(String reference)  {
+        Product p=productRepository.findProductByReference(reference);
+        return p==null?Optional.empty(): Optional.of(p);
+    }
+
+    public Page<Product> findAll(Pageable pageable,String word)  {
+        if(word!="" ){
+                return productRepository.findAll(hasDescription(word).or(hasTitle(word)),pageable);
         }
+        else return productRepository.findAll(pageable);
+
+    }
+    private static Specification<Product> hasTitle(String title){
+        return (product,criteriaQuery,criteriaBuilder)->
+             criteriaBuilder.like(product.get("title"),"%"+title+"%");
+    }
+    private static Specification<Product> hasDescription(String description){
+        return (product,criteriaQuery,criteriaBuilder)->{
+            return criteriaBuilder.like(product.get("description"),"%"+description+"%");
+        };
     }
 
-    public Page<Product> findAll(Pageable pageable)  {
-        return productRepository.findAll(pageable);
-    }
-
-    public ApiResponse<Product> delete(String reference)  {
-        try {
-            ApiResponse<Product> productApiResponse = new ApiResponse<>();
-            ApiResponse<Product> productResponse = this.find(reference);
-            if (!Objects.isNull(productResponse.getData())){
-                productRepository.delete(productResponse.getData());
-                productApiResponse.setResponseCode(ApiResponse.ResponseCode.SUCCESS);
-                productApiResponse.setResponseMessage("Product deleted");
-                productApiResponse.setData(productApiResponse.getData());
-                return productApiResponse;
-            }
-            productApiResponse.setResponseCode(ApiResponse.ResponseCode.NOT_EXIST);
-            productApiResponse.setResponseMessage("Product not deleted");
-            return productApiResponse;
-        }catch (Exception e){
-            ApiResponse<Product> productApiResponse = new ApiResponse<>();
-            productApiResponse.setResponseCode(ApiResponse.ResponseCode.ERROR_TECHNIQUE);
-            return productApiResponse;
+    public void delete(String reference)  {
+        Optional<Product> optionalProduct=findProductByReference(reference);
+        if(optionalProduct.isPresent()){
+            productRepository.delete(optionalProduct.get());
         }
     }
 
     public ApiResponse<Product> update(String reference, ProductRequest Request) {
-        try {
+        /*try {
             ApiResponse<Product> productApiResponse = new ApiResponse<>();
-            ApiResponse<Product> productResponse = this.find(reference);
+            ApiResponse<Product> productResponse = this.findProductByReference(reference);
             if (!Objects.isNull(productResponse.getData())){
                 if ( Request.getTitle() != null) {
                     productResponse.getData().setTitle(Request.getTitle());
@@ -128,7 +105,8 @@ public class ProductService {
             ApiResponse<Product> productApiResponse = new ApiResponse<>();
             productApiResponse.setResponseCode(ApiResponse.ResponseCode.ERROR_TECHNIQUE);
             return productApiResponse;
-        }
+        }*/
+        return null;
     }
 
     public boolean validateREF(String reference){

@@ -19,9 +19,9 @@ services:
 #      MYSQL_DATABASE: visionaryDb
 #    volumes:
 #      - ./data/mysql_data:/var/lib/mysql
-  adminer:
-    image: adminer
-    ports:
-      - 7770:8080
-    depends_on:
-      - db
+#  adminer:
+#    image: adminer
+#    ports:
+#      - 7770:8080
+#    depends_on:
+#      - db

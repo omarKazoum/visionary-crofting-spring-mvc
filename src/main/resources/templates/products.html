@@ -17,15 +17,14 @@
                 <th scope="col">Items left</th>
             </thead>
             <tbody>
-            <tr th:each="p: ${products}">
-                <td th:text="${p.title}"></td>
-                <td th:text="${p.description}"></td>
-                <td th:text="${p.initialPrice}"></td>
-                <td th:text="${p.quantity}"></td>
-            </tr>
-
+                <tr th:each="p: ${products}">
+                    <td th:text="${p.title}"></td>
+                    <td th:text="${p.description}"></td>
+                    <td th:text="${p.initialPrice}"></td>
+                    <td th:text="${p.quantity}"></td>
+                    <td><a th:href="@{/products/{ref}(ref=${p.reference})}" class="btn btn-success">details</a></td>
+                </tr>
             </tbody>
-
         </table>
         <nav aria-label="pagination mx-auto">
             <ul class="pagination">

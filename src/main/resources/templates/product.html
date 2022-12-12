@@ -1,0 +1,25 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${product.title}"></title>
+    <div th:replace="fragments/css_includes :: css"/>
+</head>
+<body>
+<div class="container">
+    <div th:insert="fragments/header :: header"></div>
+    <main>
+        <h3 class="h3 mt-4" th:text="${'product: '+product.title}"></h3>
+        <p>
+
+            <div>Reference: <i><span th:text="${product.reference}"></span></i></div>
+            <div>Price: <i><span th:text="${product.initialPrice}"></span> MAD</i></div>
+            <div>Available in stock: <i><span th:text="${product.quantity}"></span> Items</i></div>
+            <div>Full description: <span th:text="${product.description}"></span></div>
+        <br>
+        <button class="addToCardBtn" th:data-product-id="${product.id}" th:data-product-price="${product.initialPrice}" th:data-product-title="${product.title}" >Add To Card</button>
+        </p>
+    </main>
+</div>
+<div th:replace="fragments/js_includes :: js"/>
+</body>
+</html>

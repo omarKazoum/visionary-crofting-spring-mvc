@@ -36,6 +36,7 @@ public class VisionaryCroftingApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		insertData();
+
 	}
 	public void insertData(){
 		//let's insert some users to test login
@@ -56,7 +57,7 @@ public class VisionaryCroftingApplication implements CommandLineRunner {
 		stock.setPassword("$argon2i$v=19$m=65536,t=22,p=1$MQXQIwg7dke5mG1fujOO3Q$ytaeAO1PVvL/JJBTVMuqpZwFIVEuJbUOnuVtqJt1SPg");
 		stock.setPhone("0998");
 		stock=stockRepository.save(stock);
-		System.out.println("config value is "+config.getName());
+
 		for (int i = 0; i <100; i++) {
 			Product p=new Product();
 			p.setDescription("some product "+i);

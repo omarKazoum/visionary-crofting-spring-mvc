@@ -2,8 +2,10 @@ package com.visionary.crofting.service.Impl;
 
 import com.visionary.crofting.dto.LoginDTO;
 import com.visionary.crofting.entity.Client;
+import com.visionary.crofting.entity.Order;
 import com.visionary.crofting.exceptions.BusinessException;
 import com.visionary.crofting.repository.ClientRepository;
+import com.visionary.crofting.repository.OrderRepository;
 import com.visionary.crofting.repository.SupplierRepository;
 import com.visionary.crofting.requests.ClientDTO;
 import com.visionary.crofting.response.ApiResponse;
@@ -24,7 +26,8 @@ public class ClientServiceImpl implements IClientService {
     ClientRepository clientRepository;
     @Autowired
     SupplierRepository supplierRepository;
-
+    @Autowired
+    OrderRepository orderRepository;
     @Override
     public Client save(ClientDTO request) {
             //todo add business validation
@@ -35,6 +38,7 @@ public class ClientServiceImpl implements IClientService {
             client.setPassword(request.getPassword());
             client.setPhone(request.getPhone());
             return clientRepository.save(client);
+
     }
 
     @Override

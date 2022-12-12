@@ -8,13 +8,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @Data
-@ConfigurationProperties(prefix = "com.visionary-crofting")
 public class MvcConfig implements WebMvcConfigurer {
-    private String name="";
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-    /*    registry.addViewController("/").setViewName("home.html");
-        registry.addViewController("/home").setViewName("home.html");*/
+        registry.addViewController("/").setViewName("home.html");
+        registry.addViewController("/home").setViewName("home.html");
     }
 
 

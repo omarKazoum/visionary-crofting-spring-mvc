@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.visionary.crofting.entity.Order;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -20,4 +23,5 @@ public class OrderDTO {
     private double totalPrice=-1;
     private Long clientId;
     private Order.OrderStatusEnum status;
+    private List<OrderItemDTO> items=new ArrayList<>();
 }
