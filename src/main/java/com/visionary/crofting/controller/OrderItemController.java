@@ -24,7 +24,7 @@ public class OrderItemController {
         ApiResponse<OrderItemDTO> response=new ApiResponse<>();
         try {
             OrderItem orderItem = orderItemService.add(orderItemDTO);
-            response.setData(EntityUtils.orderItemDTOToOrderItem(orderItem));
+            response.setData(EntityUtils.orderItemToOrderItemDTO(orderItem));
             response.setResponseCode(ApiResponse.ResponseCode.SUCCESS);
             return new ResponseEntity<>(response,HttpStatus.OK);
         }catch(BusinessException businessException){
@@ -39,7 +39,7 @@ public class OrderItemController {
     ResponseEntity update(@RequestBody  OrderItemDTO orderItemDto){
         ApiResponse<OrderItemDTO> response=new ApiResponse<>();
         try {
-            response.setData(EntityUtils.orderItemDTOToOrderItem(orderItemService.update(orderItemDto)));
+            response.setData(EntityUtils.orderItemToOrderItemDTO(orderItemService.update(orderItemDto)));
             response.setResponseCode(ApiResponse.ResponseCode.SUCCESS);
             return new ResponseEntity(response,HttpStatus.OK);
         }catch (BusinessException exception){
@@ -54,7 +54,7 @@ public class OrderItemController {
     ResponseEntity getSingle( @PathVariable("orderItemId") Long orderItemId){
         ApiResponse<OrderItemDTO> response=new ApiResponse<>();
         try {
-            response.setData(EntityUtils.orderItemDTOToOrderItem(orderItemService.getOne(orderItemId)));
+            response.setData(EntityUtils.orderItemToOrderItemDTO(orderItemService.getOne(orderItemId)));
             response.setResponseMessage("successfully retrieved order item!");
             response.setResponseCode(ApiResponse.ResponseCode.SUCCESS);
             return new ResponseEntity<>(response,HttpStatus.OK);
@@ -76,7 +76,7 @@ public class OrderItemController {
         ApiResponse<List<OrderItemDTO>> response=new ApiResponse<>();
         response.setResponseCode(ApiResponse.ResponseCode.SUCCESS);
         response.setResponseMessage("successfully got order items");
-        response.setData(orderItemService.getAll().stream().map(EntityUtils::orderItemDTOToOrderItem).collect(Collectors.toList()));
+        response.setData(orderItemService.getAll().stream().map(EntityUtils::orderItemToOrderItemDTO).collect(Collectors.toList()));
         return new ResponseEntity(response,HttpStatus.OK);
     };
     @DeleteMapping("/{orderItemId}")

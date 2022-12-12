@@ -8,7 +8,6 @@ import com.visionary.crofting.response.ApiResponse;
 import com.visionary.crofting.service.IOrderService;
 import com.visionary.crofting.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Description;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +25,7 @@ public class OrderController {
         ResponseEntity responseEntity;
             ApiResponse<List<OrderItemDTO>> apiResponse=new ApiResponse<>();
             try {
-                apiResponse.setData(orderService.getOrderItemsPerOrder(orderId).stream().map(EntityUtils::orderItemDTOToOrderItem).collect(Collectors.toList()));
+                apiResponse.setData(orderService.getOrderItemsPerOrder(orderId).stream().map(EntityUtils::orderItemToOrderItemDTO).collect(Collectors.toList()));
                 apiResponse.setResponseMessage(String.format("successfully order items for order id %d !",orderId));
                 apiResponse.setResponseCode(ApiResponse.ResponseCode.SUCCESS);
                 responseEntity=new ResponseEntity(apiResponse, HttpStatus.OK);
@@ -51,8 +50,7 @@ public class OrderController {
                 responseEntity=new ResponseEntity(apiResponse, HttpStatus.OK);
             }catch(BusinessException exception){
                 apiResponse.setResponseMessage(exception.getMessage());
-                exception.setErrors(exception.getErrors());
-                apiResponse.setResponseMessage("unable to satisfy your request!");
+                apiResponse.setErrors(exception.getErrors());
                 apiResponse.setResponseCode(ApiResponse.ResponseCode.INVALID_TOKEN);
                 responseEntity=new ResponseEntity(apiResponse, HttpStatus.BAD_REQUEST);
             }
@@ -66,10 +64,10 @@ public class OrderController {
     ResponseEntity getOrders(){
         ResponseEntity responseEntity;
         ApiResponse<List<OrderDTO>> apiResponse=new ApiResponse<>();
-            apiResponse.setData(orderService.getAll().stream().map(EntityUtils::orderToOrderDTO).collect(Collectors.toList()));
-            apiResponse.setResponseMessage("successfully returned all available orders !");
-            apiResponse.setResponseCode(ApiResponse.ResponseCode.SUCCESS);
-            responseEntity=new ResponseEntity(apiResponse, HttpStatus.OK);
+        apiResponse.setData(orderService.getAll().stream().map(EntityUtils::orderToOrderDTO).collect(Collectors.toList()));
+        apiResponse.setResponseMessage("successfully returned all available orders !");
+        apiResponse.setResponseCode(ApiResponse.ResponseCode.SUCCESS);
+        responseEntity=new ResponseEntity(apiResponse, HttpStatus.OK);
         return responseEntity;
     }
 

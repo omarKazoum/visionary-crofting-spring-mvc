@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class Order {
     private Client client;
     @OneToMany(mappedBy = "order")
     @JsonIgnore
-    private List<OrderItem> orderItems;
+    private List<OrderItem> orderItems=new ArrayList<>();
     private OrderStatusEnum status;
     public enum OrderStatusEnum{
         CREATED,

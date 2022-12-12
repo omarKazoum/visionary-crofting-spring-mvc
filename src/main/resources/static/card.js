@@ -1,4 +1,5 @@
 const CARD_KEY="card";
+const API_BASE_URL="http://localhost:9000";
 const cardModal=document.querySelector("#card-modal");
 const cardModalBody=cardModal.querySelector(".modal-body");
 
@@ -6,19 +7,19 @@ const loadCardFromLocalStorage=()=>{
     localStorage.setItem(CARD_KEY,JSON.stringify(cardContents));
 }
 var cardContents=JSON.parse(localStorage.getItem(CARD_KEY)) ||{items:[]};
-const saveChangesToCardInLocalStorage=()=>{
+const saveChangesToCartInLocalStorage=()=>{
     localStorage.setItem(CARD_KEY,JSON.stringify(cardContents));
 }
 const addProductToCard=(productId,unitPrice,title)=>{
     //if the product already exists in the card
     if(isProductAlreadyExistsINCard(productId)){
         //TODO:: just pen the card popup
-        console.log("product already exits in the card")
+        console.log("product already exits in the cart")
     }else{
         cardContents.items.push({productId:productId,quantity:1,unitPrice:unitPrice,productTitle:title})
-        console.log("successfully added product to card")
+        console.log("successfully added product to cart")
     }
-    saveChangesToCardInLocalStorage();
+    saveChangesToCartInLocalStorage();
 }
 const isProductAlreadyExistsINCard=(productId)=>{
     return cardContents.items.filter(item=>item.productId==productId).length==1
@@ -56,19 +57,36 @@ document.querySelectorAll(".addToCardBtn").forEach(btn=>{
         disableAddToCardBtn(clickedBtn)
     })
 })
+const removeItemBtnClicked=(e)=>{
+    e.preventDefault();
+    console.log("remove clicked")
+    let productIdToRemove=e.target.dataset.productId;
+    cardModalBody.removeChild(e.target.closest(".form-group"));
+    cardContents.items=cardContents.items.filter(item=>item.productId!=productIdToRemove);
+}
 const showCard=()=>{
     $("#card-modal").modal("show");
     console.log("card clicked")
     //let's fill data from card to modal
     cardModalBody.innerHTML="";
-    cardContents.items.forEach(item=>{
-        const itemHtml=`
-                    <div class="form-group product-1 w-100 d-flex justify-content-between">
-                        <label class="w-50" for="product-${item.productId}">${item.productTitle}</label>
-                        <input class="w-25 product-quantity-input" type="number" name="quantity" data-product-id="${item.productId}" id="product-${item.productId}" value="${item.quantity}">
-                    </div>`;
-        cardModalBody.innerHTML+=itemHtml;
-    })
+    if(!cardContents.items || cardContents.items.length==0){
+        const itemHtml = `
+                        <b class="text-info text-center w-100">Your card is empty!</b>`;
+        cardModalBody.innerHTML += itemHtml;
+    }else {
+        cardContents.items.forEach(item => {
+            const itemHtml = `
+                        <div class="form-group product-1 w-100 d-flex justify-content-between">
+                            <label  class="w-50" for="product-${item.productId}">${item.productTitle}</label>
+                            <input min="1" class="w-25 product-quantity-input" type="number" name="quantity" data-product-id="${item.productId}" id="product-${item.productId}" value="${item.quantity}">
+                            <i class="w-25 fa-regular fa-trash-xmark card-btn-remove-item" data-product-id="${item.productId}" onclick="(e)=>{removeItemBtnClicked(e)}" > X </i>
+                        </div>`;
+
+            cardModalBody.innerHTML += itemHtml;
+
+        })
+
+    }
 
 }
 document.querySelector("#show-card-menu").addEventListener("click",showCard);
@@ -76,16 +94,54 @@ const saveDraftCard=()=>{
     cardModalBody.querySelectorAll(".product-quantity-input").forEach(input=> {
         cardContents.items.filter(item => item.productId===input.dataset.productId)[0].quantity=input.value;
     });
-    saveChangesToCardInLocalStorage();
+    saveChangesToCartInLocalStorage();
 
 }
-const createOrderCard=()=>{
-
-}
-const clearCard=()=>{
+const clearCart=()=>{
     cardContents=null;
-    saveChangesToCardInLocalStorage();
+    saveChangesToCartInLocalStorage();
 }
+const createOrderCart=()=> {
+    console.log("create order clicked")
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
 
+    var raw = JSON.stringify({
+        "clientId": 1,
+        "items":
+            cardContents.items.map(item=>{let res={"productId":item.productId,"quantity":item.quantity};
+                return  res;
+            })
+
+    });
+    console.log("raw data is ",raw)
+
+    let requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+    };
+
+    fetch(API_BASE_URL+"/api/orders/", requestOptions)
+        .then(result => {
+            if(result.ok) {
+                console.log("success")
+                result.json().then(console.log)
+                Swal.fire(
+                    'Order created successfully !',
+                    'success'
+                )
+            }else{
+                console.error("error")
+                result.json().then(console.log)
+                Swal.fire(
+                    'Order created successfully !',
+                    'success'
+                )
+            }
+        })
+        .catch(error => console.log('error', error));
+}
 //init
 loadCardFromLocalStorage();

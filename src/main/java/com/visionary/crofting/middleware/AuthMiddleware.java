@@ -20,9 +20,10 @@ public class AuthMiddleware extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         System.out.println("a request was received ");
-        if(!authConfig.isEnabled())
+        if(!authConfig.isEnabled()) {
             filterChain.doFilter(request, response);
-
+            return;
+        }
         HttpSession session=request.getSession(false);
         String url=request.getRequestURI().replace(request.getContextPath(),"");
 

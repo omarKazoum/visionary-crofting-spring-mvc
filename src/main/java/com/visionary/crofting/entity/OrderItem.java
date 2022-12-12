@@ -19,7 +19,7 @@ public class OrderItem {
     @ManyToOne
     private Product product;
     @Column(name = "total_price",nullable = false)
-    private float totalPrice;
+    private double totalPrice;
     @Column(nullable = false)
     private int quantity;
     @ManyToOne
