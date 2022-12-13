@@ -65,7 +65,7 @@ public class OrderServiceImpl implements IOrderService {
                    finalOrderToSave1.getOrderItems().add(orderItem);
                    //orderItemRepository.save(orderItem);
             });
-
+            orderToSave.setTotalPrice(totalPrice.get());
             orderToSave=orderRepository.save(orderToSave);
             Order finalOrderToSave2 = orderToSave;
             orderToSave.getOrderItems().forEach(item->{
@@ -124,11 +124,23 @@ public class OrderServiceImpl implements IOrderService {
         return page;
     }
 
+    @Override
+    public boolean updateStatus(String reference, Order.OrderStatusEnum newStatus) throws BusinessException {
+        Optional<Order> optionalOrder=orderRepository.findOrderByReference(reference);
+        if(optionalOrder.isEmpty())
+            throw new BusinessException("invalid order reference",null);
+        if (optionalOrder.get().getStatus().equals(newStatus))
+            return true;
+        optionalOrder.get().setStatus(newStatus);
+        orderRepository.save(optionalOrder.get());
+        return true;
+    }
+
     private Specification<Order> hasOrderReference(String orderReference){
         return (order,criteriaQuery,criteriaBuilder)->
             criteriaBuilder.equal(order.get("reference"),orderReference);
     }
-    boolean isOrderDTOValide(OrderDTO orderDTO, List<String> errors,OperationENum operation){
+    boolean isOrderDTOValide(OrderDTO orderDTO, List<String> errors,OperationENum operation) throws BusinessException{
         boolean valide=true;
 
         if(operation.equals(OperationENum.UPDATE) && (orderDTO.getClientId()==null || !clientRepository.existsById(orderDTO.getId()))) {

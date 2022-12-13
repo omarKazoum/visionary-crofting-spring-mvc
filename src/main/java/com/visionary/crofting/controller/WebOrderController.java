@@ -16,7 +16,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.view.RedirectView;
+import springfox.documentation.schema.Model;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,10 +41,28 @@ public class WebOrderController {
                                 @RequestParam(name = "ref", required = false,defaultValue = "") String reference){
         Map<String,Object> model=new HashMap<>();
         Page<Order> page=orderService.findAll(PageRequest.of(pageIndex,size),reference);
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+
         model.put("orders",page.getContent());
         model.put("edit",true);
         model.put("page",page);
+        model.put("formatter",formatter);
         return new ModelAndView("orders",model);
+    }
+    @GetMapping("/{ref}/changeStatus")
+    View changeOrderStatus(@RequestParam(name = "status") Order.OrderStatusEnum newStatus, @PathVariable("ref") String reference){
+        //TODO  update order status
+        boolean isStatusChanged=false;
+        try {
+            isStatusChanged=orderService.updateStatus(reference,newStatus);
+        }catch (BusinessException exception){
+            exception.printStackTrace();
+        }
+        if(isStatusChanged){
+            return new RedirectView("/orders/?msg=status changed successfully&type=success");
+        }else{
+            return new RedirectView("/orders/?msg=failed to change status&type=danger");
+        }
     }
 
 

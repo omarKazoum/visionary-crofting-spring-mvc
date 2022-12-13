@@ -19,4 +19,6 @@ public interface IOrderService {
     List<OrderItem> getOrderItemsPerOrder(Long orderId) throws BusinessException;
     List<Order> getOrdersByStatus(Order.OrderStatusEnum status);
     Page<Order> findAll(Pageable of, String orderRef);
+
+    boolean updateStatus(String reference, Order.OrderStatusEnum newStatus) throws BusinessException;
 }

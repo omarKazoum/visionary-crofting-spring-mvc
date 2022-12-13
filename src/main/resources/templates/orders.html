@@ -3,12 +3,17 @@
     <meta charset="UTF-8">
     <title>Products list</title>
     <div th:replace="fragments/css_includes :: css"/>
+    <style>
+        td{
+            vertical-align: middle;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
     <div th:insert="fragments/header :: header"></div>
     <main>
-        <h3 class="h3 mt-4">Products:</h3>
+        <h3 class="h3 mt-4">My orders:</h3>
         <table  class="table">
             <thead>
             <th scope="col">Order ID</th>
@@ -16,17 +21,25 @@
             <th scope="col">Total amount</th>
             <th scope="col">Buyer name</th>
             <th scope="col">Status</th>
+            <th scope="col">Items</th>
+
             </thead>
             <tbody>
-            <tr th:each="o: ${orders}">
+            <tr th:each="o: ${orders}" >
                 <td th:text="${o.reference}"></td>
-                <td th:text="${o.createdAt}"></td>
+                <td th:text="${formatter.format(o.createdAt)}"></td>
                 <td th:text="${o.totalPrice}"></td>
                 <td th:text="${o.client.name}"></td>
                 <td th:text="${o.status}"></td>
-               <!-- <td><a th:href="@{/orders/{ref}/changeStatus(ref=${o.reference},status=${T(com.visionary.crofting.entity.Order.OrderStatusEnum.PAYED)})}" class="btn btn-success">confirm</a></td>
-                <td><a th:href="@{/orders/{ref}/changeStatus(ref=${o.reference},status=${T(com.visionary.crofting.entity.Order.OrderStatusEnum.CANCELED)})}" class="btn btn-success">cancel</a></td>
-         -->   </tr>
+                <td th:text="${o.orderItems.size()+' items'}"></td>
+
+                <td th:if="${o.status.equals(T(com.visionary.crofting.entity.Order.OrderStatusEnum).CREATED)}">
+                    <a th:href="@{/orders/{ref}/changeStatus(ref=${o.reference},status=${T(com.visionary.crofting.entity.Order.OrderStatusEnum).PAYED})}" class="btn btn-success">confirm</a>
+                </td>
+                <td th:if="${o.status.equals(T(com.visionary.crofting.entity.Order.OrderStatusEnum).PAYED)}">
+                    <a th:href="@{/orders/{ref}/changeStatus(ref=${o.reference},status=${T(com.visionary.crofting.entity.Order.OrderStatusEnum).CANCELED})}" class="btn btn-success">cancel</a>
+                </td>
+            </tr>
             </tbody>
         </table>
         <nav aria-label="pagination mx-auto">
