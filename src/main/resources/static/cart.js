@@ -4,11 +4,11 @@ const cardModal=document.querySelector("#card-modal");
 const cardModalBody=cardModal.querySelector(".modal-body");
 
 const loadCardFromLocalStorage=()=>{
-    localStorage.setItem(CARD_KEY,JSON.stringify(cardContents));
+    localStorage.setItem(CARD_KEY,JSON.stringify(cartContents));
 }
-var cardContents=JSON.parse(localStorage.getItem(CARD_KEY)) ||{items:[]};
+var cartContents=JSON.parse(localStorage.getItem(CARD_KEY)) ||{items:[]};
 const saveChangesToCartInLocalStorage=()=>{
-    localStorage.setItem(CARD_KEY,JSON.stringify(cardContents));
+    localStorage.setItem(CARD_KEY,JSON.stringify(cartContents));
 }
 const addProductToCard=(productId,unitPrice,title)=>{
     //if the product already exists in the card
@@ -16,13 +16,13 @@ const addProductToCard=(productId,unitPrice,title)=>{
         //TODO:: just pen the card popup
         console.log("product already exits in the cart")
     }else{
-        cardContents.items.push({productId:productId,quantity:1,unitPrice:unitPrice,productTitle:title})
+        cartContents.items.push({productId:productId,quantity:1,unitPrice:unitPrice,productTitle:title})
         console.log("successfully added product to cart")
     }
     saveChangesToCartInLocalStorage();
 }
 const isProductAlreadyExistsINCard=(productId)=>{
-    return cardContents.items.filter(item=>item.productId==productId).length==1
+    return cartContents.items.filter(item=>item.productId==productId).length==1
 }
 const disableAddToCardBtn=(btn)=> {
     btn=recreateNode(btn)
@@ -61,47 +61,62 @@ const removeItemBtnClicked=(e)=>{
     e.preventDefault();
     console.log("remove clicked")
     let productIdToRemove=e.target.dataset.productId;
-    cardModalBody.removeChild(e.target.closest(".form-group"));
-    cardContents.items=cardContents.items.filter(item=>item.productId!=productIdToRemove);
+    cartContents.items=cartContents.items.filter(item=>item.productId!=productIdToRemove);
+    saveChangesToCartInLocalStorage()
+    redrawCartContentsFromLocalStorage()
 }
 const showCard=()=>{
-    $("#card-modal").modal("show");
     console.log("card clicked")
-    //let's fill data from card to modal
+
+    if(cartContents.items.length==0)
+    {
+        //so the card is empty let's warn the user
+        Swal.fire(
+            'Info',"Your cart is empty please add some items to it",
+            'info'
+        )
+    }else {
+        $("#card-modal").modal("show");
+        //let's fill data from card to modal
+        redrawCartContentsFromLocalStorage()
+    }
+}
+const redrawCartContentsFromLocalStorage=()=>{
     cardModalBody.innerHTML="";
-    if(!cardContents.items || cardContents.items.length==0){
+    if(!cartContents || cartContents && (!cartContents.items || cartContents.items.length==0)){
         const itemHtml = `
                         <b class="text-info text-center w-100">Your card is empty!</b>`;
         cardModalBody.innerHTML += itemHtml;
     }else {
-        cardContents.items.forEach(item => {
+        cartContents.items.forEach(item => {
             const itemHtml = `
-                        <div class="form-group product-1 w-100 d-flex justify-content-between">
+                        <div class="form-group product-1 w-100 d-flex justify-content-between align-items-center">
                             <label  class="w-50" for="product-${item.productId}">${item.productTitle}</label>
                             <input min="1" class="w-25 product-quantity-input" type="number" name="quantity" data-product-id="${item.productId}" id="product-${item.productId}" value="${item.quantity}">
-                            <i class="w-25 fa-regular fa-trash-xmark card-btn-remove-item" data-product-id="${item.productId}" onclick="(e)=>{removeItemBtnClicked(e)}" > X </i>
+                            <div class=" btn btn-warning card-btn-remove-item mx-1" data-product-id="${item.productId}"> X </div>
                         </div>`;
 
             cardModalBody.innerHTML += itemHtml;
 
         })
+        document.querySelectorAll(".card-btn-remove-item").forEach(btn=>btn.addEventListener("click",removeItemBtnClicked))
 
     }
-
 }
 document.querySelector("#show-card-menu").addEventListener("click",showCard);
 const saveDraftCard=()=>{
     cardModalBody.querySelectorAll(".product-quantity-input").forEach(input=> {
-        cardContents.items.filter(item => item.productId===input.dataset.productId)[0].quantity=input.value;
+        cartContents.items.filter(item => item.productId===input.dataset.productId)[0].quantity=input.value;
     });
     saveChangesToCartInLocalStorage();
 
 }
 const clearCart=()=>{
-    cardContents=null;
+    cartContents.items=[];
     saveChangesToCartInLocalStorage();
 }
 const createOrderCart=()=> {
+    saveDraftCard()
     console.log("create order clicked")
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
@@ -109,10 +124,9 @@ const createOrderCart=()=> {
     var raw = JSON.stringify({
         "clientId": 1,
         "items":
-            cardContents.items.map(item=>{let res={"productId":item.productId,"quantity":item.quantity};
+            cartContents.items.map(item=>{let res={"productId":item.productId,"quantity":item.quantity};
                 return  res;
             })
-
     });
     console.log("raw data is ",raw)
 
@@ -129,16 +143,24 @@ const createOrderCart=()=> {
                 console.log("success")
                 result.json().then(console.log)
                 Swal.fire(
-                    'Order created successfully !',
+                    'Order created successfully !',"",
                     'success'
                 )
+                clearCart()
             }else{
                 console.error("error")
-                result.json().then(console.log)
-                Swal.fire(
-                    'Order created successfully !',
-                    'success'
-                )
+                result.json().then((jsonRes)=>{
+                    Swal.fire(
+                        "Error while creating order !",
+                        `<div class='alert alert-danger'>
+                            <ul>
+                                ${jsonRes.errors.map(error=>"<li>"+error+"</li>")}
+                            </ul>
+                        </div>`,
+                        'error'
+                    )
+                })
+
             }
         })
         .catch(error => console.log('error', error));

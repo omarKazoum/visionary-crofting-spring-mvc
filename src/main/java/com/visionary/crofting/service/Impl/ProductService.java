@@ -48,14 +48,17 @@ public class ProductService {
     public Optional<Product> findProductByReference(String reference)  {
         Product p=productRepository.findProductByReference(reference);
         return p==null?Optional.empty(): Optional.of(p);
+        // true and true
+        //true or true
+
     }
 
     public Page<Product> findAll(Pageable pageable,String word)  {
-        if(word!="" ){
+        if(!word.isBlank()){
                 return productRepository.findAll(hasDescription(word).or(hasTitle(word)),pageable);
         }
-        else return productRepository.findAll(pageable);
 
+        else return productRepository.findAll(pageable);
     }
     private static Specification<Product> hasTitle(String title){
         return (product,criteriaQuery,criteriaBuilder)->
@@ -66,7 +69,6 @@ public class ProductService {
             return criteriaBuilder.like(product.get("description"),"%"+description+"%");
         };
     }
-
     public void delete(String reference)  {
         Optional<Product> optionalProduct=findProductByReference(reference);
         if(optionalProduct.isPresent()){

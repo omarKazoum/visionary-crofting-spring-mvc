@@ -26,6 +26,7 @@ public class ProductController {
     ProductService productService;
     @PostMapping("/")
     public ResponseEntity<ApiResponse<Product>> saveProduct(@RequestBody ProductRequest productRequest ){
+        //TODO migrate to web instead of REST
         try {
             ApiResponse<Product> response = productService.save(productRequest);
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -48,17 +49,7 @@ public class ProductController {
             return new ModelAndView(new RedirectView("/error"));
     }
 
-    @PostMapping("/products/{reference}")
-    public ResponseEntity<ApiResponse<Product>> updateProduct(@PathVariable String reference,@RequestBody ProductRequest productRequest){
-        try {
-            ApiResponse<Product> response = productService.update(reference,productRequest);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }catch (Exception e){
-            ApiResponse<Product> productApiResponse = new ApiResponse<>() ;
-            productApiResponse.setResponseCode(ApiResponse.ResponseCode.ERROR_TECHNIQUE);
-            return new ResponseEntity<>(productApiResponse, HttpStatus.OK);
-        }
-    }
+
 
     @GetMapping({"/",""})
     public ModelAndView getProductsList(@RequestParam(value = "page",required = false,defaultValue = "0") int pageIndex,

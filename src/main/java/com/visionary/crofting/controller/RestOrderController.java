@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/orders")
-public class OrderController {
+public class RestOrderController {
     @Autowired
     IOrderService orderService;
     @GetMapping("/{orderId}/orderItems")

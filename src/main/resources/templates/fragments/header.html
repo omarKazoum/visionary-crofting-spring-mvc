@@ -15,9 +15,12 @@
                     <li class="nav-item active">
                         <a class="nav-link" th:href="@{/products/}">Products <span class="sr-only"></span></a>
                     </li>
+                    <li>
                         <a class="nav-link" href="#" id="show-card-menu">Cart</a>
                     </li>
-
+                    <li>
+                        <a class="nav-link" th:href="@{/orders/}" id="show-card-menu">Orders</a>
+                    </li>
                 </ul>
                 <form class="form-inline d-flex flex-md-row my-2 my-lg-0" th:action="@{/products/}">
                     <input name="word" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">

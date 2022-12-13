@@ -20,7 +20,6 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
-    private Date date;
     @Column(name = "reference",nullable = false,unique = true)
     private String reference;
     private Date createdAt = new Date();
